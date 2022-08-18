@@ -84,9 +84,7 @@ def edit_post():
 def create_new_blog_entry():
     post_form = CreatePostForm()
     if post_form.validate_on_submit():
-        date = datetime.datetime.now().date()
-        x = datetime.datetime.strptime(str(date), '%Y-%m-%d')
-        formatted_date = x.strftime('%B %d, %Y')
+        formatted_date = datetime.date.today().strftime("%B %d, %Y")
         new_post = BlogPost(title=post_form.title.data,
                             subtitle=post_form.subtitle.data,
                             date=formatted_date,
