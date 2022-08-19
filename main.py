@@ -115,5 +115,13 @@ def create_new_blog_entry():
     return render_template('make-post.html', form=post_form, post_type='new')
 
 
+@app.route('/delete/<post_id>')
+def delete_post(post_id):
+    post = BlogPost.query.filter_by(id=post_id).first()
+    db.session.delete(post)
+    db.session.commit()
+    return redirect(url_for('get_all_posts'))
+
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
