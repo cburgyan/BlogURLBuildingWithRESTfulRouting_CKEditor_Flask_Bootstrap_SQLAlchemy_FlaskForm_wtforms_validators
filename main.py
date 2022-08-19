@@ -55,9 +55,9 @@ def get_all_posts():
     return render_template("index.html", all_posts=posts)
 
 
-@app.route("/post/<int:index>")
-def show_post(index):
-    requested_post = BlogPost.query.filter_by(id=index).first()
+@app.route("/post/<int:post_id>")
+def show_post(post_id):
+    requested_post = BlogPost.query.filter_by(id=post_id).first()
     # requested_post = None
     # for blog_post in posts:
     #     if blog_post["id"] == index:
@@ -75,9 +75,26 @@ def contact():
     return render_template("contact.html")
 
 
-@app.route('/edit')
-def edit_post():
-    pass
+@app.route('/edit-post/<post_id>', methods=['GET', 'POST'])
+def edit_post(post_id):
+    post = BlogPost.query.filter_by(id=post_id).first()
+    post_form = CreatePostForm(
+        title=post.title,
+        subtitle=post.subtitle,
+        img_url=post.img_url,
+        author=post.author,
+        body=post.body
+    )
+    if post_form.validate_on_submit():
+        post.title = post_form.title.data
+        post.subtitle = post_form.subtitle.data
+        post.img_url = post_form.img_url.data
+        post.author = post_form.author.data
+        post.body = post_form.body.data
+        db.session.commit()
+        return redirect(url_for('show_post', post_id=post_id))
+
+    return render_template('make-post.html', form=post_form, post_type='edit')
 
 
 @app.route('/new-post', methods=['GET', 'POST'])
@@ -95,7 +112,7 @@ def create_new_blog_entry():
         db.session.commit()
         return redirect(url_for('get_all_posts'))
 
-    return render_template('make-post.html', form=post_form)
+    return render_template('make-post.html', form=post_form, post_type='new')
 
 
 if __name__ == "__main__":
